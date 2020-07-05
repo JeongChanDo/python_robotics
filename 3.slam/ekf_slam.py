@@ -16,7 +16,7 @@ Qsim = np.diag([0.2, math.radians(1.0)])**2
 Rsim = np.diag([1.0, math.radians(10.0)])**2
 
 DT = 0.1  # time tick [s]
-SIM_TIME = 50.0  # simulation time [s]
+SIM_TIME = 60.0  # simulation time [s]
 MAX_RANGE = 20.0  # maximum observation range
 M_DIST_TH = 2.0  # Threshold of Mahalanobis distance for data association.
 STATE_SIZE = 3  # State size [x,y,yaw]
@@ -50,7 +50,6 @@ def ekf_slam(xEst, PEst, u, z):
 
         lm = get_LM_Pos_from_state(xEst, minid)
         y, S, H = calc_innovation(lm, xEst, PEst, z[iz, 0:2], minid)
-
         K = PEst * H.T * np.linalg.inv(S)
         xEst = xEst + K * y
         PEst = (np.eye(len(xEst)) - K * H) * PEst
@@ -177,7 +176,7 @@ def calc_innovation(lm, xEst, PEst, z, LMid):
     y[1] = pi_2_pi(y[1])
     H = jacobH(q, delta, xEst, LMid + 1)
     S = H * PEst * H.T + Cx[0:2, 0:2]
-
+    #H = np.array(H, dtype=np.float)
     return y, S, H
 
 
@@ -185,7 +184,6 @@ def jacobH(q, delta, x, i):
     sq = math.sqrt(q)
     G = np.matrix([[-sq * delta[0, 0], - sq * delta[1, 0], 0, sq * delta[0, 0], sq * delta[1, 0]],
                    [delta[1, 0], - delta[0, 0], - 1.0, - delta[1, 0], delta[0, 0]]])
-
     G = G / q
     nLM = calc_n_LM(x)
     F1 = np.hstack((np.eye(3), np.zeros((3, 2 * nLM))))
@@ -193,14 +191,13 @@ def jacobH(q, delta, x, i):
                     np.eye(2), np.zeros((2, 2 * nLM - 2 * i))))
 
     F = np.vstack((F1, F2))
-
     H = G * F
 
     return H
 
 
 def pi_2_pi(angle):
-    return (angle + math.pi) % (2*math.pi) - math.pi
+    return float((angle + math.pi) % (2*math.pi) - math.pi)
 
 
 def main():
