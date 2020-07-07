@@ -20,13 +20,13 @@ Qsim = np.diag([0.3, math.radians(2.0)])**2
 Rsim = np.diag([0.5, math.radians(10.0)])**2
 OFFSET_YAWRATE_NOISE = 0.01
 
-DT = 0.1  # time tick [s]
-SIM_TIME = 50.0  # simulation time [s]
+DT = 0.3  # time tick [s]
+SIM_TIME = 90.0  # simulation time [s]
 MAX_RANGE = 20.0  # maximum observation range
 M_DIST_TH = 2.0  # Threshold of Mahalanobis distance for data association.
 STATE_SIZE = 3  # State size [x,y,yaw]
 LM_SIZE = 2  # LM srate size [x,y]
-N_PARTICLE = 100  # number of particle
+N_PARTICLE = 50  # number of particle
 NTH = N_PARTICLE / 1.5  # Number of particle for re-sampling
 
 show_animation = True
@@ -325,7 +325,7 @@ def motion_model(x, u):
 
 
 def pi_2_pi(angle):
-    return (angle + math.pi) % (2*math.pi) - math.pi
+    return float((angle + math.pi) % (2*math.pi) - math.pi)
 
 
 def main():
